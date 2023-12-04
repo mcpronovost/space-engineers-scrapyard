@@ -7,7 +7,7 @@
             <TypeId>ShipWelder</TypeId>
             <SubtypeId>SELtdLargeNanobotBuildAndRepairSystem</SubtypeId>
          </Id>
-         <DisplayName>BuildAndRepairSystem</DisplayName>
+         <DisplayName>Scrapbot</DisplayName>
          <Icon>Textures\Icons\SELtdNanobotBuildAndRepairSystem.dds</Icon>
          <CubeSize>Large</CubeSize>
          <BlockTopology>TriangleMesh</BlockTopology>
