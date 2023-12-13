@@ -6,7 +6,7 @@ using VRage.Game;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
 
-namespace SpaceEquipmentLtd.Utils
+namespace Okp.Utils
 {
    public class Logging
    {

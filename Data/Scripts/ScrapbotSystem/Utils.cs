@@ -8,7 +8,7 @@ using VRage.Game.ModAPI;
 using VRage.Game.Components;
 using VRageMath;
 
-namespace SpaceEquipmentLtd.Utils
+namespace Okp.Utils
 {
    public static class Utils
    {

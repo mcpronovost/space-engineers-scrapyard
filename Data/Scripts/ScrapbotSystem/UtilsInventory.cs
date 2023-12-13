@@ -11,7 +11,7 @@ using VRage.ModAPI;
 using MyInventoryItem = VRage.Game.ModAPI.Ingame.MyInventoryItem;
 using MyItemType = VRage.Game.ModAPI.Ingame.MyItemType;
 
-namespace SpaceEquipmentLtd.Utils
+namespace Okp.Utils
 {
    public static class UtilsInventory
    {

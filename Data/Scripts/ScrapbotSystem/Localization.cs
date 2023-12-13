@@ -4,10 +4,10 @@ using System.Text;
 using Sandbox.ModAPI;
 using VRage;
 using VRage.Utils;
-using SpaceEquipmentLtd.Utils;
+using Okp.Utils;
 using System.Text.RegularExpressions;
 
-namespace SpaceEquipmentLtd.Localization
+namespace Okp.Localization
 {
    public static class LocalizationHelper
    {

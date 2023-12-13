@@ -1,4 +1,4 @@
-namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
+namespace Okp.ScrapbotSystem
 {
    using System;
    using System.Collections.Generic;
@@ -21,7 +21,7 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
    using Sandbox.ModAPI.Ingame;
    using Sandbox.Definitions;
 
-   using SpaceEquipmentLtd.Utils;
+   using Okp.Utils;
 
    using IMyShipWelder = Sandbox.ModAPI.IMyShipWelder;
    using IMyTerminalBlock = Sandbox.ModAPI.IMyTerminalBlock;
@@ -31,7 +31,7 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
 
 
    [MyEntityComponentDescriptor(typeof(MyObjectBuilder_ShipWelder), false, "SELtdLargeNanobotBuildAndRepairSystem")]
-   public class NanobotBuildAndRepairSystemBlock : MyGameLogicComponent
+   public class ScrapbotSystemBlock : MyGameLogicComponent
    {
       private enum WorkingState
       {
@@ -112,7 +112,7 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
       private MyFlareDefinition _LightEffectFlareGrinding;
       private Vector3 _EmitterPosition;
 
-      private TimeSpan _LastSourceUpdate = -NanobotBuildAndRepairSystemMod.Settings.SourcesUpdateInterval;
+      private TimeSpan _LastSourceUpdate = -ScrapbotSystemMod.Settings.SourcesUpdateInterval;
       private TimeSpan _LastTargetsUpdate;
 
       private bool _CreativeModeActive;
@@ -137,12 +137,12 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
       internal SyncBlockSettings Settings {
          get
          {
-            return (_Settings != null) ? _Settings : _Settings = SyncBlockSettings.Load(this, NanobotBuildAndRepairSystemMod.ModGuid, BlockWeldPriority, BlockGrindPriority, ComponentCollectPriority);
+            return (_Settings != null) ? _Settings : _Settings = SyncBlockSettings.Load(this, ScrapbotSystemMod.ModGuid, BlockWeldPriority, BlockGrindPriority, ComponentCollectPriority);
          }
       }
 
-      private NanobotBuildAndRepairSystemBlockPriorityHandling _BlockWeldPriority = new NanobotBuildAndRepairSystemBlockPriorityHandling();
-      internal NanobotBuildAndRepairSystemBlockPriorityHandling BlockWeldPriority
+      private ScrapbotSystemBlockPriorityHandling _BlockWeldPriority = new ScrapbotSystemBlockPriorityHandling();
+      internal ScrapbotSystemBlockPriorityHandling BlockWeldPriority
       {
          get
          {
@@ -150,8 +150,8 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
          }
       }
 
-      private NanobotBuildAndRepairSystemBlockPriorityHandling _BlockGrindPriority = new NanobotBuildAndRepairSystemBlockPriorityHandling();
-      internal NanobotBuildAndRepairSystemBlockPriorityHandling BlockGrindPriority
+      private ScrapbotSystemBlockPriorityHandling _BlockGrindPriority = new ScrapbotSystemBlockPriorityHandling();
+      internal ScrapbotSystemBlockPriorityHandling BlockGrindPriority
       {
          get
          {
@@ -222,26 +222,26 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
       /// </summary>
       public void SettingsChanged()
       {
-         if (NanobotBuildAndRepairSystemMod.SettingsValid) 
+         if (ScrapbotSystemMod.SettingsValid) 
          {
             //Check limits as soon but not sooner as the 'server' settings has been received, otherwise we might use the wrong limits
             Settings.CheckLimits(this, false);
-            if ((NanobotBuildAndRepairSystemMod.Settings.Welder.AllowedEffects & VisualAndSoundEffects.WeldingSoundEffect) == 0)  _Sounds[(int)WorkingState.Welding] = null;
-            if ((NanobotBuildAndRepairSystemMod.Settings.Welder.AllowedEffects & VisualAndSoundEffects.GrindingSoundEffect) == 0) _Sounds[(int)WorkingState.Grinding] = null;
+            if ((ScrapbotSystemMod.Settings.Welder.AllowedEffects & VisualAndSoundEffects.WeldingSoundEffect) == 0)  _Sounds[(int)WorkingState.Welding] = null;
+            if ((ScrapbotSystemMod.Settings.Welder.AllowedEffects & VisualAndSoundEffects.GrindingSoundEffect) == 0) _Sounds[(int)WorkingState.Grinding] = null;
          }
 
          var resourceSink = _Welder.ResourceSink as Sandbox.Game.EntityComponents.MyResourceSinkComponent;
          if (resourceSink != null)
          {
             var electricPowerTransport = Settings.MaximumRequiredElectricPowerTransport;
-            if ((NanobotBuildAndRepairSystemMod.Settings.Welder.AllowedSearchModes & SearchModes.BoundingBox) == 0) electricPowerTransport /= 10;
+            if ((ScrapbotSystemMod.Settings.Welder.AllowedSearchModes & SearchModes.BoundingBox) == 0) electricPowerTransport /= 10;
             var maxPowerWorking = Math.Max(Settings.MaximumRequiredElectricPowerWelding, Settings.MaximumRequiredElectricPowerGrinding);
             resourceSink.SetMaxRequiredInputByType(ElectricityId, maxPowerWorking + electricPowerTransport + Settings.MaximumRequiredElectricPowerStandby);
             resourceSink.SetRequiredInputFuncByType(ElectricityId, ComputeRequiredElectricPower);
             resourceSink.Update();
          }
 
-         var maxMultiplier = Math.Max(NanobotBuildAndRepairSystemMod.Settings.Welder.WeldingMultiplier, NanobotBuildAndRepairSystemMod.Settings.Welder.GrindingMultiplier);
+         var maxMultiplier = Math.Max(ScrapbotSystemMod.Settings.Welder.WeldingMultiplier, ScrapbotSystemMod.Settings.Welder.GrindingMultiplier);
          if (maxMultiplier > 10) NeedsUpdate = MyEntityUpdateEnum.EACH_FRAME | MyEntityUpdateEnum.EACH_10TH_FRAME;
          else NeedsUpdate = MyEntityUpdateEnum.EACH_FRAME | MyEntityUpdateEnum.EACH_100TH_FRAME;
 
@@ -264,14 +264,14 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
             return;
          }
 
-         lock (NanobotBuildAndRepairSystemMod.BuildAndRepairSystems)
+         lock (ScrapbotSystemMod.BuildAndRepairSystems)
          {
-            if (!NanobotBuildAndRepairSystemMod.BuildAndRepairSystems.ContainsKey(Entity.EntityId))
+            if (!ScrapbotSystemMod.BuildAndRepairSystems.ContainsKey(Entity.EntityId))
             {
-               NanobotBuildAndRepairSystemMod.BuildAndRepairSystems.Add(Entity.EntityId, this);
+               ScrapbotSystemMod.BuildAndRepairSystems.Add(Entity.EntityId, this);
             }
          }
-         NanobotBuildAndRepairSystemMod.InitControls();
+         ScrapbotSystemMod.InitControls();
 
          _Welder.EnabledChanged += (block) => { this.UpdateCustomInfo(true); };
          _Welder.IsWorkingChanged += (block) => { this.UpdateCustomInfo(true); };
@@ -294,7 +294,7 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
             }
          }
 
-         NanobotBuildAndRepairSystemMod.SyncBlockDataRequestSend(this);
+         ScrapbotSystemMod.SyncBlockDataRequestSend(this);
          UpdateCustomInfo(true);
          _TryPushInventoryLast = MyAPIGateway.Session.ElapsedPlayTime.Add(TimeSpan.FromSeconds(10));
          _TryAutoPushInventoryLast = _TryPushInventoryLast;
@@ -365,11 +365,11 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
          if (_IsInit)
          {
             ServerEmptyTranportInventory(true);
-            Settings.Save(Entity, NanobotBuildAndRepairSystemMod.ModGuid);
+            Settings.Save(Entity, ScrapbotSystemMod.ModGuid);
             if (Mod.Log.ShouldLog(Logging.Level.Event)) Mod.Log.Write(Logging.Level.Event, "BuildAndRepairSystemBlock {0}: Close Saved Settings {1}", Logging.BlockName(_Welder, Logging.BlockNameOptions.None), Settings.GetAsXML());
-            lock (NanobotBuildAndRepairSystemMod.BuildAndRepairSystems)
+            lock (ScrapbotSystemMod.BuildAndRepairSystems)
             {
-               NanobotBuildAndRepairSystemMod.BuildAndRepairSystems.Remove(Entity.EntityId);
+               ScrapbotSystemMod.BuildAndRepairSystems.Remove(Entity.EntityId);
             }
 
             //Stop effects
@@ -459,7 +459,7 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
          if (Mod.Log.ShouldLog(Logging.Level.Event)) Mod.Log.Write(Logging.Level.Event, "BuildAndRepairSystemBlock {0}: UpdatingStopped", Logging.BlockName(_Welder, Logging.BlockNameOptions.None));
          if (_IsInit)
          {
-            Settings.Save(Entity, NanobotBuildAndRepairSystemMod.ModGuid);
+            Settings.Save(Entity, ScrapbotSystemMod.ModGuid);
          }
          //Stop sound effects
          StopSoundEffects();
@@ -509,10 +509,10 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
                      }
                   }
 
-                  Settings.TrySave(Entity, NanobotBuildAndRepairSystemMod.ModGuid);
+                  Settings.TrySave(Entity, ScrapbotSystemMod.ModGuid);
                   if (State.IsTransmitNeeded())
                   {
-                     NanobotBuildAndRepairSystemMod.SyncBlockStateSend(0, this);
+                     ScrapbotSystemMod.SyncBlockStateSend(0, this);
                   }
                }
             }
@@ -526,7 +526,7 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
             }
             if (Settings.IsTransmitNeeded())
             {
-               NanobotBuildAndRepairSystemMod.SyncBlockSettingsSend(0, this);
+               ScrapbotSystemMod.SyncBlockSettingsSend(0, this);
             }
             if (_UpdateCustomInfoNeeded) UpdateCustomInfo(false);
 
@@ -1020,7 +1020,7 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
                   {
                      if (Mod.Log.ShouldLog(Logging.Level.Info)) Mod.Log.Write(Logging.Level.Info, "BuildAndRepairSystemBlock {0}: ServerDoWeld (incomplete): {1}", Logging.BlockName(_Welder, Logging.BlockNameOptions.None), Logging.BlockName(target));
                      //target.MoveUnneededItemsFromConstructionStockpile(welderInventory); not available in modding api
-                     target.IncreaseMountLevel(MyAPIGateway.Session.WelderSpeedMultiplier * NanobotBuildAndRepairSystemMod.Settings.Welder.WeldingMultiplier * WELDER_AMOUNT_PER_SECOND, _Welder.OwnerId, welderInventory, MyAPIGateway.Session.WelderSpeedMultiplier * NanobotBuildAndRepairSystemMod.Settings.Welder.WeldingMultiplier * WELDER_MAX_REPAIR_BONE_MOVEMENT_SPEED, _Welder.HelpOthers);
+                     target.IncreaseMountLevel(MyAPIGateway.Session.WelderSpeedMultiplier * ScrapbotSystemMod.Settings.Welder.WeldingMultiplier * WELDER_AMOUNT_PER_SECOND, _Welder.OwnerId, welderInventory, MyAPIGateway.Session.WelderSpeedMultiplier * ScrapbotSystemMod.Settings.Welder.WeldingMultiplier * WELDER_MAX_REPAIR_BONE_MOVEMENT_SPEED, _Welder.HelpOthers);
                   }
                   if (target.IsFullIntegrity || (((Settings.WeldOptions & AutoWeldOptions.FunctionalOnly) != 0) && target.Integrity >= target.MaxIntegrity * ((MyCubeBlockDefinition)target.BlockDefinition).CriticalIntegrityRatio))
                   {
@@ -1032,7 +1032,7 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
                   //Deformation
                   if (Mod.Log.ShouldLog(Logging.Level.Info)) Mod.Log.Write(Logging.Level.Info, "BuildAndRepairSystemBlock {0}: ServerDoWeld (deformed): {1}", Logging.BlockName(_Welder, Logging.BlockNameOptions.None), Logging.BlockName(target));
                   welding = true;
-                  target.IncreaseMountLevel(MyAPIGateway.Session.WelderSpeedMultiplier * NanobotBuildAndRepairSystemMod.Settings.Welder.WeldingMultiplier * WELDER_AMOUNT_PER_SECOND, _Welder.OwnerId, welderInventory, MyAPIGateway.Session.WelderSpeedMultiplier * NanobotBuildAndRepairSystemMod.Settings.Welder.WeldingMultiplier * WELDER_MAX_REPAIR_BONE_MOVEMENT_SPEED, _Welder.HelpOthers);
+                  target.IncreaseMountLevel(MyAPIGateway.Session.WelderSpeedMultiplier * ScrapbotSystemMod.Settings.Welder.WeldingMultiplier * WELDER_AMOUNT_PER_SECOND, _Welder.OwnerId, welderInventory, MyAPIGateway.Session.WelderSpeedMultiplier * ScrapbotSystemMod.Settings.Welder.WeldingMultiplier * WELDER_MAX_REPAIR_BONE_MOVEMENT_SPEED, _Welder.HelpOthers);
                }
             }
             return welding || created;
@@ -1074,7 +1074,7 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
          var disassembleRatio = target.FatBlock != null ? target.FatBlock.DisassembleRatio : ((MyCubeBlockDefinition)target.BlockDefinition).DisassembleRatio;
          var integrityPointsPerSec = ((MyCubeBlockDefinition)target.BlockDefinition).IntegrityPointsPerSec;
 
-         float damage = MyAPIGateway.Session.GrinderSpeedMultiplier * NanobotBuildAndRepairSystemMod.Settings.Welder.GrindingMultiplier * GRINDER_AMOUNT_PER_SECOND;
+         float damage = MyAPIGateway.Session.GrinderSpeedMultiplier * ScrapbotSystemMod.Settings.Welder.GrindingMultiplier * GRINDER_AMOUNT_PER_SECOND;
          var grinderAmount = damage * integrityPointsPerSec / disassembleRatio;
          integrityRatio = (target.Integrity - grinderAmount) / target.MaxIntegrity;
 
@@ -1118,14 +1118,14 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
                //Not available in modding
                //MyAPIGateway.Session.DamageSystem.RaiseBeforeDamageApplied(target, ref damageInfo);
 
-               foreach (var entry in NanobotBuildAndRepairSystemMod.BuildAndRepairSystems)
+               foreach (var entry in ScrapbotSystemMod.BuildAndRepairSystems)
                {
                   var relation = entry.Value.Welder.GetUserRelationToOwner(_Welder.OwnerId);
                   if (MyRelationsBetweenPlayerAndBlockExtensions.IsFriendly(relation))
                   {
                      //A 'friendly' damage from grinder -> do not repair (for a while)
                      //I don't check block relation here, because if it is enemy we won't repair it in any case and it just times out
-                     entry.Value.FriendlyDamage[target] = MyAPIGateway.Session.ElapsedPlayTime + NanobotBuildAndRepairSystemMod.Settings.FriendlyDamageTimeout;
+                     entry.Value.FriendlyDamage[target] = MyAPIGateway.Session.ElapsedPlayTime + ScrapbotSystemMod.Settings.FriendlyDamageTimeout;
                      if (Mod.Log.ShouldLog(Logging.Level.Info)) Mod.Log.Write(Logging.Level.Info, "BuildAndRepairSystemBlock: Damaged Add FriendlyDamage {0} Timeout {1}", Logging.BlockName(target), entry.Value.FriendlyDamage[target]);
                   }
                }
@@ -1611,8 +1611,8 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
       public void UpdateSourcesAndTargetsTimer()
       {
          var playTime = MyAPIGateway.Session.ElapsedPlayTime;
-         var updateTargets = playTime.Subtract(_LastTargetsUpdate) >= NanobotBuildAndRepairSystemMod.Settings.TargetsUpdateInterval;
-         var updateSources = updateTargets && playTime.Subtract(_LastSourceUpdate) >= NanobotBuildAndRepairSystemMod.Settings.SourcesUpdateInterval;
+         var updateTargets = playTime.Subtract(_LastTargetsUpdate) >= ScrapbotSystemMod.Settings.TargetsUpdateInterval;
+         var updateSources = updateTargets && playTime.Subtract(_LastSourceUpdate) >= ScrapbotSystemMod.Settings.SourcesUpdateInterval;
          if (updateTargets)
          {
             StartAsyncUpdateSourcesAndTargets(updateSources);
@@ -1658,7 +1658,7 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
          {
             if (_AsyncUpdateSourcesAndTargetsRunning) return;
             _AsyncUpdateSourcesAndTargetsRunning = true;
-            NanobotBuildAndRepairSystemMod.AddAsyncAction(() => AsyncUpdateSourcesAndTargets(updateSource));
+            ScrapbotSystemMod.AddAsyncAction(() => AsyncUpdateSourcesAndTargets(updateSource));
          }
       }
 
@@ -1746,7 +1746,7 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
                      var block = inventory.Owner as IMyShipWelder;
                      if (block != null && block.BlockDefinition.SubtypeName.Contains("NanobotBuildAndRepairSystem") && block.GameLogic != null)
                      {
-                        var bar = block.GameLogic.GetAs<NanobotBuildAndRepairSystemBlock>();
+                        var bar = block.GameLogic.GetAs<ScrapbotSystemBlock>();
                         //Don't use Bar's as destination that would push immediately
                         if (bar != null)
                         {
@@ -2425,7 +2425,7 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
       private void CleanupFriendlyDamage()
       {
          var playTime = MyAPIGateway.Session.ElapsedPlayTime;
-         if (playTime.Subtract(_LastFriendlyDamageCleanup) > NanobotBuildAndRepairSystemMod.Settings.FriendlyDamageCleanup)
+         if (playTime.Subtract(_LastFriendlyDamageCleanup) > ScrapbotSystemMod.Settings.FriendlyDamageCleanup)
          {
             //Cleanup
             var timedout = new List<IMySlimBlock>();
@@ -2533,8 +2533,8 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
             case WorkingState.Welding:
             case WorkingState.Grinding:
                if ((_ActiveWorkingEffects < MaxWorkingEffects) &&
-                   ((workingState == WorkingState.Welding && ((NanobotBuildAndRepairSystemMod.Settings.Welder.AllowedEffects & VisualAndSoundEffects.WeldingVisualEffect) != 0)) ||
-                    (workingState == WorkingState.Grinding && ((NanobotBuildAndRepairSystemMod.Settings.Welder.AllowedEffects & VisualAndSoundEffects.GrindingVisualEffect) != 0))))
+                   ((workingState == WorkingState.Welding && ((ScrapbotSystemMod.Settings.Welder.AllowedEffects & VisualAndSoundEffects.WeldingVisualEffect) != 0)) ||
+                    (workingState == WorkingState.Grinding && ((ScrapbotSystemMod.Settings.Welder.AllowedEffects & VisualAndSoundEffects.GrindingVisualEffect) != 0))))
                {
                   Interlocked.Increment(ref _ActiveWorkingEffects);
 
@@ -2714,7 +2714,7 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
       /// </summary>
       private void SetTransportEffects(bool active)
       {
-         if ((NanobotBuildAndRepairSystemMod.Settings.Welder.AllowedEffects & VisualAndSoundEffects.TransportVisualEffect) != 0) 
+         if ((ScrapbotSystemMod.Settings.Welder.AllowedEffects & VisualAndSoundEffects.TransportVisualEffect) != 0) 
          {
             if (active)
             {

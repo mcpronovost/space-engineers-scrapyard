@@ -1,4 +1,4 @@
-namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
+namespace Okp.ScrapbotSystem
 {
    using System;
    using System.Collections.Generic;
@@ -12,7 +12,7 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
    using Sandbox.Game.EntityComponents;
    using Sandbox.ModAPI;
 
-   using SpaceEquipmentLtd.Utils;
+   using Okp.Utils;
    using ProtoBuf;
 
    /// <summary>
@@ -89,15 +89,15 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
       {
          DisableLocalization = false;
          LogLevel = Logging.Level.Error; //Default
-         MaxBackgroundTasks = NanobotBuildAndRepairSystemMod.MaxBackgroundTasks_Default;
+         MaxBackgroundTasks = ScrapbotSystemMod.MaxBackgroundTasks_Default;
          TargetsUpdateInterval = TimeSpan.FromSeconds(10);
          SourcesUpdateInterval = TimeSpan.FromSeconds(60);
          FriendlyDamageTimeout = TimeSpan.FromSeconds(60);
          FriendlyDamageCleanup = TimeSpan.FromSeconds(10);
-         Range = NanobotBuildAndRepairSystemBlock.WELDER_RANGE_DEFAULT_IN_M;
-         MaximumOffset = NanobotBuildAndRepairSystemBlock.WELDER_OFFSET_MAX_DEFAULT_IN_M;
-         MaximumRequiredElectricPowerStandby = NanobotBuildAndRepairSystemBlock.WELDER_REQUIRED_ELECTRIC_POWER_STANDBY_DEFAULT;
-         MaximumRequiredElectricPowerTransport = NanobotBuildAndRepairSystemBlock.WELDER_REQUIRED_ELECTRIC_POWER_TRANSPORT_DEFAULT;
+         Range = ScrapbotSystemBlock.WELDER_RANGE_DEFAULT_IN_M;
+         MaximumOffset = ScrapbotSystemBlock.WELDER_OFFSET_MAX_DEFAULT_IN_M;
+         MaximumRequiredElectricPowerStandby = ScrapbotSystemBlock.WELDER_REQUIRED_ELECTRIC_POWER_STANDBY_DEFAULT;
+         MaximumRequiredElectricPowerTransport = ScrapbotSystemBlock.WELDER_REQUIRED_ELECTRIC_POWER_TRANSPORT_DEFAULT;
          Welder = new SyncModSettingsWelder();
       }
 
@@ -126,31 +126,31 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
             if (settings != null)
             {
                var adjusted = AdjustSettings(settings);
-               if (settings.MaxBackgroundTasks > NanobotBuildAndRepairSystemMod.MaxBackgroundTasks_Max)
+               if (settings.MaxBackgroundTasks > ScrapbotSystemMod.MaxBackgroundTasks_Max)
                {
-                  settings.MaxBackgroundTasks = NanobotBuildAndRepairSystemMod.MaxBackgroundTasks_Max;
+                  settings.MaxBackgroundTasks = ScrapbotSystemMod.MaxBackgroundTasks_Max;
                   adjusted = true;
                }
-               else if (settings.MaxBackgroundTasks < NanobotBuildAndRepairSystemMod.MaxBackgroundTasks_Min)
+               else if (settings.MaxBackgroundTasks < ScrapbotSystemMod.MaxBackgroundTasks_Min)
                {
-                  settings.MaxBackgroundTasks = NanobotBuildAndRepairSystemMod.MaxBackgroundTasks_Min;
-                  adjusted = true;
-               }
-
-               if (settings.Range > NanobotBuildAndRepairSystemBlock.WELDER_RANGE_MAX_IN_M)
-               {
-                  settings.Range = NanobotBuildAndRepairSystemBlock.WELDER_RANGE_MAX_IN_M;
-                  adjusted = true;
-               }
-               else if (settings.Range < NanobotBuildAndRepairSystemBlock.WELDER_RANGE_MIN_IN_M)
-               {
-                  settings.Range = NanobotBuildAndRepairSystemBlock.WELDER_RANGE_MIN_IN_M;
+                  settings.MaxBackgroundTasks = ScrapbotSystemMod.MaxBackgroundTasks_Min;
                   adjusted = true;
                }
 
-               if (settings.MaximumOffset > NanobotBuildAndRepairSystemBlock.WELDER_OFFSET_MAX_IN_M)
+               if (settings.Range > ScrapbotSystemBlock.WELDER_RANGE_MAX_IN_M)
                {
-                  settings.MaximumOffset = NanobotBuildAndRepairSystemBlock.WELDER_OFFSET_MAX_IN_M;
+                  settings.Range = ScrapbotSystemBlock.WELDER_RANGE_MAX_IN_M;
+                  adjusted = true;
+               }
+               else if (settings.Range < ScrapbotSystemBlock.WELDER_RANGE_MIN_IN_M)
+               {
+                  settings.Range = ScrapbotSystemBlock.WELDER_RANGE_MIN_IN_M;
+                  adjusted = true;
+               }
+
+               if (settings.MaximumOffset > ScrapbotSystemBlock.WELDER_OFFSET_MAX_IN_M)
+               {
+                  settings.MaximumOffset = ScrapbotSystemBlock.WELDER_OFFSET_MAX_IN_M;
                   adjusted = true;
                }
                else if (settings.MaximumOffset < 0)
@@ -159,25 +159,25 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
                   adjusted = true;
                }
 
-               if (settings.Welder.WeldingMultiplier < NanobotBuildAndRepairSystemBlock.WELDING_GRINDING_MULTIPLIER_MIN)
+               if (settings.Welder.WeldingMultiplier < ScrapbotSystemBlock.WELDING_GRINDING_MULTIPLIER_MIN)
                {
-                  settings.Welder.WeldingMultiplier = NanobotBuildAndRepairSystemBlock.WELDING_GRINDING_MULTIPLIER_MIN;
+                  settings.Welder.WeldingMultiplier = ScrapbotSystemBlock.WELDING_GRINDING_MULTIPLIER_MIN;
                   adjusted = true;
                }
-               else if (settings.Welder.WeldingMultiplier >= NanobotBuildAndRepairSystemBlock.WELDING_GRINDING_MULTIPLIER_MAX)
+               else if (settings.Welder.WeldingMultiplier >= ScrapbotSystemBlock.WELDING_GRINDING_MULTIPLIER_MAX)
                {
-                  settings.Welder.WeldingMultiplier = NanobotBuildAndRepairSystemBlock.WELDING_GRINDING_MULTIPLIER_MAX;
+                  settings.Welder.WeldingMultiplier = ScrapbotSystemBlock.WELDING_GRINDING_MULTIPLIER_MAX;
                   adjusted = true;
                }
 
-               if (settings.Welder.GrindingMultiplier < NanobotBuildAndRepairSystemBlock.WELDING_GRINDING_MULTIPLIER_MIN)
+               if (settings.Welder.GrindingMultiplier < ScrapbotSystemBlock.WELDING_GRINDING_MULTIPLIER_MIN)
                {
-                  settings.Welder.GrindingMultiplier = NanobotBuildAndRepairSystemBlock.WELDING_GRINDING_MULTIPLIER_MIN;
+                  settings.Welder.GrindingMultiplier = ScrapbotSystemBlock.WELDING_GRINDING_MULTIPLIER_MIN;
                   adjusted = true;
                }
-               else if (settings.Welder.GrindingMultiplier >= NanobotBuildAndRepairSystemBlock.WELDING_GRINDING_MULTIPLIER_MAX)
+               else if (settings.Welder.GrindingMultiplier >= ScrapbotSystemBlock.WELDING_GRINDING_MULTIPLIER_MAX)
                {
-                  settings.Welder.GrindingMultiplier = NanobotBuildAndRepairSystemBlock.WELDING_GRINDING_MULTIPLIER_MAX;
+                  settings.Welder.GrindingMultiplier = ScrapbotSystemBlock.WELDING_GRINDING_MULTIPLIER_MAX;
                   adjusted = true;
                }
 
@@ -334,8 +334,8 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
 
       public SyncModSettingsWelder()
       {
-         MaximumRequiredElectricPowerWelding = NanobotBuildAndRepairSystemBlock.WELDER_REQUIRED_ELECTRIC_POWER_WELDING_DEFAULT;
-         MaximumRequiredElectricPowerGrinding = NanobotBuildAndRepairSystemBlock.WELDER_REQUIRED_ELECTRIC_POWER_GRINDING_DEFAULT;
+         MaximumRequiredElectricPowerWelding = ScrapbotSystemBlock.WELDER_REQUIRED_ELECTRIC_POWER_WELDING_DEFAULT;
+         MaximumRequiredElectricPowerGrinding = ScrapbotSystemBlock.WELDER_REQUIRED_ELECTRIC_POWER_GRINDING_DEFAULT;
 
          WeldingMultiplier = 1f;
          GrindingMultiplier = 100f;
@@ -378,7 +378,7 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
          CollectIfIdleDefault = false;
 
          SoundVolumeFixed = false;
-         SoundVolumeDefault = NanobotBuildAndRepairSystemBlock.WELDER_SOUND_VOLUME / 2;
+         SoundVolumeDefault = ScrapbotSystemBlock.WELDER_SOUND_VOLUME / 2;
 
          ScriptControllFixed = false;
          AllowedEffects = VisualAndSoundEffects.WeldingVisualEffect | VisualAndSoundEffects.WeldingSoundEffect
@@ -894,7 +894,7 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
 
       }
 
-      public SyncBlockSettings(NanobotBuildAndRepairSystemBlock system)
+      public SyncBlockSettings(ScrapbotSystemBlock system)
       {
          _WeldPriority = string.Empty;
          _GrindPriority = string.Empty;
@@ -938,7 +938,7 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
          Changed = (Changed & ~2u);
       }
 
-      public static SyncBlockSettings Load(NanobotBuildAndRepairSystemBlock system, Guid guid, NanobotBuildAndRepairSystemBlockPriorityHandling blockWeldPriority, NanobotBuildAndRepairSystemBlockPriorityHandling blockGrindPriority, NanobotBuildAndRepairSystemComponentPriorityHandling componentCollectPriority)
+      public static SyncBlockSettings Load(ScrapbotSystemBlock system, Guid guid, ScrapbotSystemBlockPriorityHandling blockWeldPriority, ScrapbotSystemBlockPriorityHandling blockGrindPriority, NanobotBuildAndRepairSystemComponentPriorityHandling componentCollectPriority)
       {
          var storage = system.Entity.Storage;
          string data;
@@ -983,7 +983,7 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
          return settings;
       }
 
-      public void AssignReceived(SyncBlockSettings newSettings, NanobotBuildAndRepairSystemBlockPriorityHandling weldPriority, NanobotBuildAndRepairSystemBlockPriorityHandling grindPriority, NanobotBuildAndRepairSystemComponentPriorityHandling componentCollectPriority)
+      public void AssignReceived(SyncBlockSettings newSettings, ScrapbotSystemBlockPriorityHandling weldPriority, ScrapbotSystemBlockPriorityHandling grindPriority, NanobotBuildAndRepairSystemComponentPriorityHandling componentCollectPriority)
       {
          _Flags = newSettings._Flags;
          _IgnoreColor = newSettings.IgnoreColor;
@@ -1051,18 +1051,18 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
          }
       }
 
-      public void CheckLimits(NanobotBuildAndRepairSystemBlock system, bool init)
+      public void CheckLimits(ScrapbotSystemBlock system, bool init)
       {
          var scale = (system != null && system.Welder != null ? (system.Welder.BlockDefinition.SubtypeName.Contains("Large") ? 1f : 3f) : 1f);
 
-         if (NanobotBuildAndRepairSystemMod.Settings.Welder.AreaOffsetFixed || init)
+         if (ScrapbotSystemMod.Settings.Welder.AreaOffsetFixed || init)
          {
             MaximumOffset = 0;
             AreaOffset = new Vector3(0, 0, 0);
          }
          else
          {
-            MaximumOffset = (int)Math.Ceiling(NanobotBuildAndRepairSystemMod.Settings.MaximumOffset / scale);
+            MaximumOffset = (int)Math.Ceiling(ScrapbotSystemMod.Settings.MaximumOffset / scale);
             if (AreaOffset.X > MaximumOffset || init) AreaOffset = new Vector3(init ? 0 : (float)MaximumOffset, AreaOffset.Y, AreaOffset.Z);
             else if (AreaOffset.X < -MaximumOffset || init) AreaOffset = new Vector3(init ? 0 : (float)-MaximumOffset, AreaOffset.Y, AreaOffset.Z);
 
@@ -1073,8 +1073,8 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
             else if (AreaOffset.Z < -MaximumOffset || init) AreaOffset = new Vector3(AreaOffset.X, AreaOffset.Y, init ? 0 : (float)-MaximumOffset);
          }
 
-         MaximumRange = (int)Math.Ceiling(NanobotBuildAndRepairSystemMod.Settings.Range*2 / scale);
-         if (NanobotBuildAndRepairSystemMod.Settings.Welder.AreaSizeFixed || init)
+         MaximumRange = (int)Math.Ceiling(ScrapbotSystemMod.Settings.Range*2 / scale);
+         if (ScrapbotSystemMod.Settings.Welder.AreaSizeFixed || init)
          {
             AreaSize = new Vector3(MaximumRange, MaximumRange, MaximumRange);
          } else {
@@ -1083,80 +1083,80 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
             if (AreaSize.Z > MaximumRange || init) AreaSize = new Vector3(AreaSize.X, AreaSize.Y, MaximumRange);
          }
 
-         MaximumRequiredElectricPowerStandby = NanobotBuildAndRepairSystemMod.Settings.MaximumRequiredElectricPowerStandby / scale;
-         MaximumRequiredElectricPowerTransport = NanobotBuildAndRepairSystemMod.Settings.MaximumRequiredElectricPowerTransport / scale;
-         MaximumRequiredElectricPowerWelding = NanobotBuildAndRepairSystemMod.Settings.Welder.MaximumRequiredElectricPowerWelding / scale;
-         MaximumRequiredElectricPowerGrinding = NanobotBuildAndRepairSystemMod.Settings.Welder.MaximumRequiredElectricPowerGrinding / scale;
+         MaximumRequiredElectricPowerStandby = ScrapbotSystemMod.Settings.MaximumRequiredElectricPowerStandby / scale;
+         MaximumRequiredElectricPowerTransport = ScrapbotSystemMod.Settings.MaximumRequiredElectricPowerTransport / scale;
+         MaximumRequiredElectricPowerWelding = ScrapbotSystemMod.Settings.Welder.MaximumRequiredElectricPowerWelding / scale;
+         MaximumRequiredElectricPowerGrinding = ScrapbotSystemMod.Settings.Welder.MaximumRequiredElectricPowerGrinding / scale;
 
-         var maxMultiplier = Math.Max(NanobotBuildAndRepairSystemMod.Settings.Welder.WeldingMultiplier, NanobotBuildAndRepairSystemMod.Settings.Welder.GrindingMultiplier);
-         TransportSpeed = maxMultiplier * NanobotBuildAndRepairSystemBlock.WELDER_TRANSPORTSPEED_METER_PER_SECOND_DEFAULT * Math.Min(NanobotBuildAndRepairSystemMod.Settings.Range / NanobotBuildAndRepairSystemBlock.WELDER_RANGE_DEFAULT_IN_M, 4.0f);
+         var maxMultiplier = Math.Max(ScrapbotSystemMod.Settings.Welder.WeldingMultiplier, ScrapbotSystemMod.Settings.Welder.GrindingMultiplier);
+         TransportSpeed = maxMultiplier * ScrapbotSystemBlock.WELDER_TRANSPORTSPEED_METER_PER_SECOND_DEFAULT * Math.Min(ScrapbotSystemMod.Settings.Range / ScrapbotSystemBlock.WELDER_RANGE_DEFAULT_IN_M, 4.0f);
 
-         if (NanobotBuildAndRepairSystemMod.Settings.Welder.AllowBuildFixed || init)
+         if (ScrapbotSystemMod.Settings.Welder.AllowBuildFixed || init)
          {
-            Flags = (Flags & ~Settings.AllowBuild) | (NanobotBuildAndRepairSystemMod.Settings.Welder.AllowBuildDefault ? Settings.AllowBuild : 0);
+            Flags = (Flags & ~Settings.AllowBuild) | (ScrapbotSystemMod.Settings.Welder.AllowBuildDefault ? Settings.AllowBuild : 0);
          }
 
-         if (NanobotBuildAndRepairSystemMod.Settings.Welder.UseIgnoreColorFixed || init)
+         if (ScrapbotSystemMod.Settings.Welder.UseIgnoreColorFixed || init)
          {
-            Flags = (Flags & ~Settings.UseIgnoreColor) | (NanobotBuildAndRepairSystemMod.Settings.Welder.UseIgnoreColorDefault ? Settings.UseIgnoreColor : 0);
-            if (NanobotBuildAndRepairSystemMod.Settings.Welder.IgnoreColorDefault != null && NanobotBuildAndRepairSystemMod.Settings.Welder.IgnoreColorDefault.Length >= 3)
+            Flags = (Flags & ~Settings.UseIgnoreColor) | (ScrapbotSystemMod.Settings.Welder.UseIgnoreColorDefault ? Settings.UseIgnoreColor : 0);
+            if (ScrapbotSystemMod.Settings.Welder.IgnoreColorDefault != null && ScrapbotSystemMod.Settings.Welder.IgnoreColorDefault.Length >= 3)
             {
-               IgnoreColor = new Vector3D(NanobotBuildAndRepairSystemMod.Settings.Welder.IgnoreColorDefault[0] / 360f,
-                                         ((float)Math.Round(NanobotBuildAndRepairSystemMod.Settings.Welder.IgnoreColorDefault[1], 1, MidpointRounding.AwayFromZero) / 100f) - NanobotBuildAndRepairSystemTerminal.SATURATION_DELTA,
-                                         ((float)Math.Round(NanobotBuildAndRepairSystemMod.Settings.Welder.IgnoreColorDefault[2], 1, MidpointRounding.AwayFromZero) / 100f) - NanobotBuildAndRepairSystemTerminal.VALUE_DELTA + NanobotBuildAndRepairSystemTerminal.VALUE_COLORIZE_DELTA);
+               IgnoreColor = new Vector3D(ScrapbotSystemMod.Settings.Welder.IgnoreColorDefault[0] / 360f,
+                                         ((float)Math.Round(ScrapbotSystemMod.Settings.Welder.IgnoreColorDefault[1], 1, MidpointRounding.AwayFromZero) / 100f) - NanobotBuildAndRepairSystemTerminal.SATURATION_DELTA,
+                                         ((float)Math.Round(ScrapbotSystemMod.Settings.Welder.IgnoreColorDefault[2], 1, MidpointRounding.AwayFromZero) / 100f) - NanobotBuildAndRepairSystemTerminal.VALUE_DELTA + NanobotBuildAndRepairSystemTerminal.VALUE_COLORIZE_DELTA);
             }
          }
 
-         if (NanobotBuildAndRepairSystemMod.Settings.Welder.UseGrindColorFixed || init)
+         if (ScrapbotSystemMod.Settings.Welder.UseGrindColorFixed || init)
          {
-            Flags = (Flags & ~Settings.UseGrindColor) | (NanobotBuildAndRepairSystemMod.Settings.Welder.UseGrindColorDefault ? Settings.UseGrindColor : 0);
-            if (NanobotBuildAndRepairSystemMod.Settings.Welder.GrindColorDefault != null && NanobotBuildAndRepairSystemMod.Settings.Welder.GrindColorDefault.Length >= 3)
+            Flags = (Flags & ~Settings.UseGrindColor) | (ScrapbotSystemMod.Settings.Welder.UseGrindColorDefault ? Settings.UseGrindColor : 0);
+            if (ScrapbotSystemMod.Settings.Welder.GrindColorDefault != null && ScrapbotSystemMod.Settings.Welder.GrindColorDefault.Length >= 3)
             {
-               GrindColor = new Vector3D(NanobotBuildAndRepairSystemMod.Settings.Welder.GrindColorDefault[0] / 360f,
-                                         ((float)Math.Round(NanobotBuildAndRepairSystemMod.Settings.Welder.GrindColorDefault[1], 1, MidpointRounding.AwayFromZero) / 100f) - NanobotBuildAndRepairSystemTerminal.SATURATION_DELTA,
-                                         ((float)Math.Round(NanobotBuildAndRepairSystemMod.Settings.Welder.GrindColorDefault[2], 1, MidpointRounding.AwayFromZero) / 100f) - NanobotBuildAndRepairSystemTerminal.VALUE_DELTA + NanobotBuildAndRepairSystemTerminal.VALUE_COLORIZE_DELTA);
+               GrindColor = new Vector3D(ScrapbotSystemMod.Settings.Welder.GrindColorDefault[0] / 360f,
+                                         ((float)Math.Round(ScrapbotSystemMod.Settings.Welder.GrindColorDefault[1], 1, MidpointRounding.AwayFromZero) / 100f) - NanobotBuildAndRepairSystemTerminal.SATURATION_DELTA,
+                                         ((float)Math.Round(ScrapbotSystemMod.Settings.Welder.GrindColorDefault[2], 1, MidpointRounding.AwayFromZero) / 100f) - NanobotBuildAndRepairSystemTerminal.VALUE_DELTA + NanobotBuildAndRepairSystemTerminal.VALUE_COLORIZE_DELTA);
             }
          }
 
-         if (NanobotBuildAndRepairSystemMod.Settings.Welder.UseGrindJanitorFixed || init)
+         if (ScrapbotSystemMod.Settings.Welder.UseGrindJanitorFixed || init)
          {
-            UseGrindJanitorOn = NanobotBuildAndRepairSystemMod.Settings.Welder.UseGrindJanitorDefault;
-            GrindJanitorOptions = NanobotBuildAndRepairSystemMod.Settings.Welder.GrindJanitorOptionsDefault;
+            UseGrindJanitorOn = ScrapbotSystemMod.Settings.Welder.UseGrindJanitorDefault;
+            GrindJanitorOptions = ScrapbotSystemMod.Settings.Welder.GrindJanitorOptionsDefault;
          }
 
-         UseGrindJanitorOn &= NanobotBuildAndRepairSystemMod.Settings.Welder.AllowedGrindJanitorRelations;
+         UseGrindJanitorOn &= ScrapbotSystemMod.Settings.Welder.AllowedGrindJanitorRelations;
 
-         if (NanobotBuildAndRepairSystemMod.Settings.Welder.ShowAreaFixed || init) Flags = (Flags & ~Settings.ShowArea);
-         if (NanobotBuildAndRepairSystemMod.Settings.Welder.PushIngotOreImmediatelyFixed || init) Flags = (Flags & ~Settings.PushIngotOreImmediately) | (NanobotBuildAndRepairSystemMod.Settings.Welder.PushIngotOreImmediatelyDefault ? Settings.PushIngotOreImmediately : 0);
-         if (NanobotBuildAndRepairSystemMod.Settings.Welder.PushComponentImmediatelyFixed || init) Flags = (Flags & ~Settings.PushComponentImmediately) | (NanobotBuildAndRepairSystemMod.Settings.Welder.PushComponentImmediatelyDefault ? Settings.PushComponentImmediately : 0);
-         if (NanobotBuildAndRepairSystemMod.Settings.Welder.PushItemsImmediatelyFixed || init) Flags = (Flags & ~Settings.PushItemsImmediately) | (NanobotBuildAndRepairSystemMod.Settings.Welder.PushItemsImmediatelyDefault ? Settings.PushItemsImmediately : 0);
-         if (NanobotBuildAndRepairSystemMod.Settings.Welder.CollectIfIdleFixed || init) Flags = (Flags & ~Settings.ComponentCollectIfIdle) | (NanobotBuildAndRepairSystemMod.Settings.Welder.CollectIfIdleDefault ? Settings.ComponentCollectIfIdle : 0);
-         if (NanobotBuildAndRepairSystemMod.Settings.Welder.SoundVolumeFixed || init) SoundVolume = NanobotBuildAndRepairSystemMod.Settings.Welder.SoundVolumeDefault;
-         if (NanobotBuildAndRepairSystemMod.Settings.Welder.ScriptControllFixed || init) Flags = (Flags & ~Settings.ScriptControlled);
-         if ((NanobotBuildAndRepairSystemMod.Settings.Welder.AllowedSearchModes & SearchMode) == 0 || init)
+         if (ScrapbotSystemMod.Settings.Welder.ShowAreaFixed || init) Flags = (Flags & ~Settings.ShowArea);
+         if (ScrapbotSystemMod.Settings.Welder.PushIngotOreImmediatelyFixed || init) Flags = (Flags & ~Settings.PushIngotOreImmediately) | (ScrapbotSystemMod.Settings.Welder.PushIngotOreImmediatelyDefault ? Settings.PushIngotOreImmediately : 0);
+         if (ScrapbotSystemMod.Settings.Welder.PushComponentImmediatelyFixed || init) Flags = (Flags & ~Settings.PushComponentImmediately) | (ScrapbotSystemMod.Settings.Welder.PushComponentImmediatelyDefault ? Settings.PushComponentImmediately : 0);
+         if (ScrapbotSystemMod.Settings.Welder.PushItemsImmediatelyFixed || init) Flags = (Flags & ~Settings.PushItemsImmediately) | (ScrapbotSystemMod.Settings.Welder.PushItemsImmediatelyDefault ? Settings.PushItemsImmediately : 0);
+         if (ScrapbotSystemMod.Settings.Welder.CollectIfIdleFixed || init) Flags = (Flags & ~Settings.ComponentCollectIfIdle) | (ScrapbotSystemMod.Settings.Welder.CollectIfIdleDefault ? Settings.ComponentCollectIfIdle : 0);
+         if (ScrapbotSystemMod.Settings.Welder.SoundVolumeFixed || init) SoundVolume = ScrapbotSystemMod.Settings.Welder.SoundVolumeDefault;
+         if (ScrapbotSystemMod.Settings.Welder.ScriptControllFixed || init) Flags = (Flags & ~Settings.ScriptControlled);
+         if ((ScrapbotSystemMod.Settings.Welder.AllowedSearchModes & SearchMode) == 0 || init)
          {
-            if ((NanobotBuildAndRepairSystemMod.Settings.Welder.AllowedSearchModes & NanobotBuildAndRepairSystemMod.Settings.Welder.SearchModeDefault) != 0)
+            if ((ScrapbotSystemMod.Settings.Welder.AllowedSearchModes & ScrapbotSystemMod.Settings.Welder.SearchModeDefault) != 0)
             {
-               SearchMode = NanobotBuildAndRepairSystemMod.Settings.Welder.SearchModeDefault;
-            }
-            else
-            {
-               if ((NanobotBuildAndRepairSystemMod.Settings.Welder.AllowedSearchModes & SearchModes.Grids) != 0) SearchMode = SearchModes.Grids;
-               else if ((NanobotBuildAndRepairSystemMod.Settings.Welder.AllowedSearchModes & SearchModes.BoundingBox) != 0) SearchMode = SearchModes.BoundingBox;
-            }
-         }
-
-         if ((NanobotBuildAndRepairSystemMod.Settings.Welder.AllowedWorkModes & WorkMode) == 0 || init)
-         {
-            if ((NanobotBuildAndRepairSystemMod.Settings.Welder.AllowedWorkModes & NanobotBuildAndRepairSystemMod.Settings.Welder.WorkModeDefault) != 0)
-            {
-               WorkMode = NanobotBuildAndRepairSystemMod.Settings.Welder.WorkModeDefault;
+               SearchMode = ScrapbotSystemMod.Settings.Welder.SearchModeDefault;
             }
             else
             {
-               if ((NanobotBuildAndRepairSystemMod.Settings.Welder.AllowedWorkModes & WorkModes.WeldBeforeGrind) != 0) WorkMode = WorkModes.WeldBeforeGrind;
-               else if ((NanobotBuildAndRepairSystemMod.Settings.Welder.AllowedWorkModes & WorkModes.GrindBeforeWeld) != 0) WorkMode = WorkModes.GrindBeforeWeld;
-               else if ((NanobotBuildAndRepairSystemMod.Settings.Welder.AllowedWorkModes & WorkModes.GrindIfWeldGetStuck) != 0) WorkMode = WorkModes.GrindIfWeldGetStuck;
+               if ((ScrapbotSystemMod.Settings.Welder.AllowedSearchModes & SearchModes.Grids) != 0) SearchMode = SearchModes.Grids;
+               else if ((ScrapbotSystemMod.Settings.Welder.AllowedSearchModes & SearchModes.BoundingBox) != 0) SearchMode = SearchModes.BoundingBox;
+            }
+         }
+
+         if ((ScrapbotSystemMod.Settings.Welder.AllowedWorkModes & WorkMode) == 0 || init)
+         {
+            if ((ScrapbotSystemMod.Settings.Welder.AllowedWorkModes & ScrapbotSystemMod.Settings.Welder.WorkModeDefault) != 0)
+            {
+               WorkMode = ScrapbotSystemMod.Settings.Welder.WorkModeDefault;
+            }
+            else
+            {
+               if ((ScrapbotSystemMod.Settings.Welder.AllowedWorkModes & WorkModes.WeldBeforeGrind) != 0) WorkMode = WorkModes.WeldBeforeGrind;
+               else if ((ScrapbotSystemMod.Settings.Welder.AllowedWorkModes & WorkModes.GrindBeforeWeld) != 0) WorkMode = WorkModes.GrindBeforeWeld;
+               else if ((ScrapbotSystemMod.Settings.Welder.AllowedWorkModes & WorkModes.GrindIfWeldGetStuck) != 0) WorkMode = WorkModes.GrindIfWeldGetStuck;
             }
          }
       }

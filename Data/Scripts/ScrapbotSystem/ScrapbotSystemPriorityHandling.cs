@@ -1,4 +1,4 @@
-namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
+namespace Okp.ScrapbotSystem
 {
    using System;
    using Utils;
@@ -32,9 +32,9 @@ namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
       Gravel
    }
 
-   public class NanobotBuildAndRepairSystemBlockPriorityHandling : PriorityHandling<PrioItem, IMySlimBlock>
+   public class ScrapbotSystemBlockPriorityHandling : PriorityHandling<PrioItem, IMySlimBlock>
    {
-      public NanobotBuildAndRepairSystemBlockPriorityHandling()
+      public ScrapbotSystemBlockPriorityHandling()
       {
          foreach (var item in Enum.GetValues(typeof(BlockClass)))
          {

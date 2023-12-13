@@ -4,7 +4,7 @@ using System.Linq;
 using VRage.ModAPI;
 using VRage.Utils;
 
-namespace SpaceEquipmentLtd.Utils
+namespace Okp.Utils
 {
    public class PrioItem
    {

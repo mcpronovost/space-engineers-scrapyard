@@ -6,7 +6,7 @@ using VRage.ObjectBuilders;
 using System.Collections.Generic;
 using ProtoBuf;
 
-namespace SpaceEquipmentLtd.Utils
+namespace Okp.Utils
 {
    public static class UtilsSynchronization
    {

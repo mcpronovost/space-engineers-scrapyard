@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using VRage.ModAPI;
 
-namespace SpaceEquipmentLtd.Utils
+namespace Okp.Utils
 {
    public static class UtilsProductionBlock
    {

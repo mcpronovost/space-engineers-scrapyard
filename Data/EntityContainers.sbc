@@ -7,7 +7,7 @@
             <SubtypeId>SELtdLargeNanobotBuildAndRepairSystem</SubtypeId>
          </Id>
          <DefaultComponents>
-            <Component BuilderType="MyObjectBuilder_ModStorageComponent" SubtypeId="NanobotBuildAndRepairSystemMod" ForceCreate="true"/>
+            <Component BuilderType="MyObjectBuilder_ModStorageComponent" SubtypeId="ScrapbotSystemMod" ForceCreate="true"/>
          </DefaultComponents>
       </Container>
    </EntityContainers>

@@ -1,11 +1,11 @@
-namespace SpaceEquipmentLtd.NanobotBuildAndRepairSystem
+namespace Okp.ScrapbotSystem
 {
    using System.Collections.Generic;
    using VRage;
    using VRage.Utils;
    using Sandbox.ModAPI;
-   using SpaceEquipmentLtd.Utils;
-   using SpaceEquipmentLtd.Localization;
+   using Okp.Utils;
+   using Okp.Localization;
    
    public static class Texts
    {
