@@ -80,9 +80,9 @@ namespace Okp.ScrapbotSystem
       }
    }
 
-   public class NanobotBuildAndRepairSystemComponentPriorityHandling : PriorityHandling<PrioItem, MyDefinitionId>
+   public class ScrapbotSystemComponentPriorityHandling : PriorityHandling<PrioItem, MyDefinitionId>
    {
-      public NanobotBuildAndRepairSystemComponentPriorityHandling()
+      public ScrapbotSystemComponentPriorityHandling()
       {
          foreach (var item in Enum.GetValues(typeof(ComponentClass)))
          {

@@ -159,8 +159,8 @@ namespace Okp.ScrapbotSystem
          }
       }
 
-      private NanobotBuildAndRepairSystemComponentPriorityHandling _ComponentCollectPriority = new NanobotBuildAndRepairSystemComponentPriorityHandling();
-      internal NanobotBuildAndRepairSystemComponentPriorityHandling ComponentCollectPriority
+      private ScrapbotSystemComponentPriorityHandling _ComponentCollectPriority = new ScrapbotSystemComponentPriorityHandling();
+      internal ScrapbotSystemComponentPriorityHandling ComponentCollectPriority
       {
          get
          {

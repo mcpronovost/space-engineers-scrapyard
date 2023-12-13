@@ -1165,10 +1165,10 @@ namespace Okp.ScrapbotSystem
                      var system = GetSystem(block);
                      if (system != null)
                      {
-                        return system != null ? ((system.Settings.Flags & SyncBlockSettings.Settings.ShowArea) != 0) : false;
+                        return system != null ? ((system.Settings.Flags & SyncBlockSettings.Settings.ShowArea) != 0) : true;
                      }
 
-                     return false;
+                     return true;
                   };
                   checkbox.Setter = (block, value) =>
                   {

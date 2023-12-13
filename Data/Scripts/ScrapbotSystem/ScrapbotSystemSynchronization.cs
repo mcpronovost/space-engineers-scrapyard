@@ -290,6 +290,8 @@ namespace Okp.ScrapbotSystem
 
       [ProtoMember(125), XmlElement]
       public bool ShowAreaFixed { get; set; }
+      [ProtoMember(126), XmlElement]
+      public bool ShowAreaDefault { get; set; }
 
       [ProtoMember(130), XmlElement]
       public bool AreaSizeFixed { get; set; }
@@ -340,8 +342,8 @@ namespace Okp.ScrapbotSystem
          WeldingMultiplier = 1f;
          GrindingMultiplier = 100f;
 
-         AllowedSearchModes = SearchModes.Grids | SearchModes.BoundingBox;
-         SearchModeDefault = SearchModes.Grids;
+         AllowedSearchModes = SearchModes.BoundingBox;
+         SearchModeDefault = SearchModes.BoundingBox;
 
          AllowBuildFixed = false;
          AllowBuildDefault = true;
@@ -353,16 +355,17 @@ namespace Okp.ScrapbotSystem
          UseIgnoreColorDefault = false;
          IgnoreColorDefault = new float[] { 321f, 100f, 51f };
 
-         UseGrindColorFixed = false;
+         UseGrindColorFixed = true;
          UseGrindColorDefault = false;
          GrindColorDefault = new float[] { 321f, 100f, 50f };
 
-         UseGrindJanitorFixed = false;
-         UseGrindJanitorDefault = AutoGrindRelation.Enemies | AutoGrindRelation.NoOwnership;
+         UseGrindJanitorFixed = true;
+         UseGrindJanitorDefault = AutoGrindRelation.Enemies;
          GrindJanitorOptionsDefault = 0;
          AllowedGrindJanitorRelations = AutoGrindRelation.NoOwnership | AutoGrindRelation.Enemies | AutoGrindRelation.Neutral;
 
-         ShowAreaFixed = false;
+         ShowAreaFixed = true;
+         ShowAreaDefault = true;
          AreaSizeFixed = false;
          AreaOffsetFixed = false;
          PriorityFixed = false;
@@ -938,7 +941,7 @@ namespace Okp.ScrapbotSystem
          Changed = (Changed & ~2u);
       }
 
-      public static SyncBlockSettings Load(ScrapbotSystemBlock system, Guid guid, ScrapbotSystemBlockPriorityHandling blockWeldPriority, ScrapbotSystemBlockPriorityHandling blockGrindPriority, NanobotBuildAndRepairSystemComponentPriorityHandling componentCollectPriority)
+      public static SyncBlockSettings Load(ScrapbotSystemBlock system, Guid guid, ScrapbotSystemBlockPriorityHandling blockWeldPriority, ScrapbotSystemBlockPriorityHandling blockGrindPriority, ScrapbotSystemComponentPriorityHandling componentCollectPriority)
       {
          var storage = system.Entity.Storage;
          string data;
@@ -983,7 +986,7 @@ namespace Okp.ScrapbotSystem
          return settings;
       }
 
-      public void AssignReceived(SyncBlockSettings newSettings, ScrapbotSystemBlockPriorityHandling weldPriority, ScrapbotSystemBlockPriorityHandling grindPriority, NanobotBuildAndRepairSystemComponentPriorityHandling componentCollectPriority)
+      public void AssignReceived(SyncBlockSettings newSettings, ScrapbotSystemBlockPriorityHandling weldPriority, ScrapbotSystemBlockPriorityHandling grindPriority, ScrapbotSystemComponentPriorityHandling componentCollectPriority)
       {
          _Flags = newSettings._Flags;
          _IgnoreColor = newSettings.IgnoreColor;
@@ -1126,7 +1129,7 @@ namespace Okp.ScrapbotSystem
 
          UseGrindJanitorOn &= ScrapbotSystemMod.Settings.Welder.AllowedGrindJanitorRelations;
 
-         if (ScrapbotSystemMod.Settings.Welder.ShowAreaFixed || init) Flags = (Flags & ~Settings.ShowArea);
+         if (ScrapbotSystemMod.Settings.Welder.ShowAreaFixed || init) Flags = (Flags & ~Settings.ShowArea) | (ScrapbotSystemMod.Settings.Welder.ShowAreaDefault ? Settings.ShowArea : 0);
          if (ScrapbotSystemMod.Settings.Welder.PushIngotOreImmediatelyFixed || init) Flags = (Flags & ~Settings.PushIngotOreImmediately) | (ScrapbotSystemMod.Settings.Welder.PushIngotOreImmediatelyDefault ? Settings.PushIngotOreImmediately : 0);
          if (ScrapbotSystemMod.Settings.Welder.PushComponentImmediatelyFixed || init) Flags = (Flags & ~Settings.PushComponentImmediately) | (ScrapbotSystemMod.Settings.Welder.PushComponentImmediatelyDefault ? Settings.PushComponentImmediately : 0);
          if (ScrapbotSystemMod.Settings.Welder.PushItemsImmediatelyFixed || init) Flags = (Flags & ~Settings.PushItemsImmediately) | (ScrapbotSystemMod.Settings.Welder.PushItemsImmediatelyDefault ? Settings.PushItemsImmediately : 0);
